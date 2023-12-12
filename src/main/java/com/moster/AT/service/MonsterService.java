@@ -17,7 +17,7 @@ public class MonsterService {
 
     public Map<Integer, Monster> monsterMap = retornoElements();
 
-    public Integer idmonstro = (Integer) retornoTodosMonstros().size();
+    public Integer idmonstro = (Integer) retornoTodos().size();
 
 
 
@@ -31,7 +31,7 @@ public class MonsterService {
 
             Monster monster = monsterUtil.getMonster(i);
 
-            Monster monstroX = new Monster(monster.getId() , monster.getName() , monster.getElements());
+            Monster monstroX = new Monster(monster.getId(), monster.getName() , monster.getElements() , monster.getActions());
 
             monsterMap.put(monstroX.getId(), monstroX);
         }
@@ -49,7 +49,9 @@ public List<Monster> retornoTodos() {
 
 public Monster getMonsterPerID(int id ) {
 
-        Monster monster;
-}
+    Monster monster = null;
 
+    return monster;
+
+}
 }

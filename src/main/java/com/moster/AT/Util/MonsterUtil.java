@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.moster.AT.model.Monster;
+
+import javax.swing.text.Element;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,6 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class MonsterUtil {
     private final String URL = "https://mhw-db.com/monsters/";
@@ -33,15 +36,16 @@ public class MonsterUtil {
             Monster MonsterDetails = mapper.readValue(response.body(), Monster.class);
 
             String nome = MonsterDetails.getName();
-            List<String> Elementos = getMonsterElements(MonsterDetails);
+            List<String> elementos = getMonsterElements(MonsterDetails);
+            List<String> actions = getMonsterElements(MonsterDetails);
 
-            Monster monstro = new Monster((int) id, nome, Elementos);
+            Monster monstro = new Monster((int) id, nome, actions, elementos);
 
             return monstro;
 
-        }   catch (URISyntaxException | IOException | InterruptedException e) {
+        } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
-            }
+        }
     }
 
     public List<String> getMonsterElements(Monster monster) {
@@ -52,10 +56,40 @@ public class MonsterUtil {
 
             Object tipos = monster.getElements().get(i);
 
-            Elements.add(tipos.toString());
 
-            return Elements;
+            if (tipos instanceof Map) {
+                Map<String, Object> tiposList = (Map<String, Object>) tipos;
+
+                Object tipoList = tiposList.get("elements");
+                if (tipoList instanceof Map) {
+                    Map<String, Object> ElementList = (Map<String, Object>) tipoList;
+                    Object nomeElement = ElementList.get("name");
+
+                    Elements.add(nomeElement.toString());
+                    Elements.add(tipos.toString());
+                }
+            }
         }
-               return Elements;
-     }
+        return Elements;
+    }
+        private List<String> getMonsterTipos(Monster monster) {
+
+        List<String> tipoList2 = new LinkedList<>();
+        for (int i = 0; i < monster.getActions().size(); i++) {
+
+            Object tipos1 = monster.getId();
+            if (tipos1 instanceof Map) {
+                Map<String, Object> tipo = (Map<String, Object>) tipos1;
+
+                Object speciess = tipo.get("species");
+                if (speciess instanceof Map) {
+                    Map<String, Object> nome = (Map<String, Object>) speciess;
+
+                    Object monsterTipo = nome.get("id");
+                    tipoList2.add(monsterTipo.toString());
+                }
+            }
+        }
+        return tipoList2;
+    }
 }
